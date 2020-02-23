@@ -50,9 +50,9 @@ void mostrar_aristas();
                         break;
                 case 2: insertar_arista();
                         break;
-                case 5: mostrar_grafo();
+                case 3: mostrar_grafo();
                         break;
-                case 6: mostrar_aristas();
+                case 4: mostrar_aristas();
                         break;
 
                 default: cout<<"OPCION NO VALIDA...!!!";
@@ -74,9 +74,9 @@ void menu()
 
     cout<<" 1. INSERTAR UN NODO                 "<<endl;
     cout<<" 2. INSERTAR UNA ARISTA              "<<endl;
-    cout<<" 5. MOSTRAR  GRAFO                   "<<endl;
-    cout<<" 6. MOSTRAR ARISTAS DE UN NODO       "<<endl;
-    cout<<" 7. SALIR                            "<<endl;
+    cout<<" 3. MOSTRAR  GRAFO                   "<<endl;
+    cout<<" 4. MOSTRAR ARISTAS DE UN NODO       "<<endl;
+
 
     cout<<"\n INGRESE OPCION: ";
 }

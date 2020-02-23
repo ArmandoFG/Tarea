@@ -12,8 +12,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.show();
+    w.show();return a.exec();
 
+/*
     bool inicio;
     inicio = true;
     int sock = 0, valread;
@@ -49,5 +50,5 @@ int main(int argc, char *argv[])
         return a.exec();
 }
         return 0;
-
+*/
 }
