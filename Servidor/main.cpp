@@ -5,17 +5,25 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <grafo.h>
 #define PORT 8080
+
+
+
 int main(int argc, char const *argv[])
 {
+    Grafo();
 
+    bool inicio;
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Hello desde el server";
 
+    char *hello = "Hello desde el server";
+    inicio = true;
+    while(inicio == true){
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -44,17 +52,20 @@ int main(int argc, char const *argv[])
     if (listen(server_fd, 3) < 0)
     {
         perror("listen");
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
     }
+
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
                        (socklen_t*)&addrlen))<0)
     {
         perror("accept");
-        exit(EXIT_FAILURE);
+        //exit(EXIT_FAILURE);
     }
     valread = read( new_socket , buffer, 1024);
     printf("%s\n",buffer );
     send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello cliente sent\n");
+
+    }
     return 0;
+
 }
