@@ -1,21 +1,45 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <string>
+#include <string.h>
+#include "mainwindow.h"
+#include "cliente.h"
+#include <cliente.h>
+#include "cliente.h"
+#include "mainwindow.h"
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <QApplication>
+#include <QCoreApplication>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <string.h>
+#include "mainwindow.h"
+#define PORT 8080
+
+
+using namespace std;
+
+int temporal;
+string temporal2;
+
+
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
+
+
 {
-    ui->setupUi(this);
-    ui->texto->setText("INGRESE OPCION: \n \n"
-
-                       "1. INSERTAR UN NODO \n\n"
-
-                       "2. INSERTAR UNA ARISTA \n\n"
-
-                       "3. MOSTRAR  GRAFO \n\n"
 
 
-                       "4. MOSTRAR ARISTAS DE UN NODO \n\n");
 
 
 
@@ -28,18 +52,20 @@ MainWindow::~MainWindow()
 
 }
 
+
+
 void MainWindow::Opciones(){
-    ui->Aceptar->setText("Apretado");
-    ui->texto->setText("ddddfdfdfdfdfd");
+
+
+    if(ui->lineoption->text() != nullptr && ui->lineoption->text() ==  "1" && temporal == 0) {
+
+
+
+
+
 }
 
-/*
-INGRESE OPCION:
+}
 
-1. INSERTAR UN NODO
 
-2. INSERTAR UNA ARISTA
 
-3. MOSTRAR  GRAFO
-
-4. MOSTRAR ARISTAS DE UN NODO */

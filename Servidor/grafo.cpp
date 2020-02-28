@@ -1,5 +1,4 @@
 #include "grafo.h"
-
 #include <iostream>
 #include <stdio.h>
 #include <iostream>
@@ -7,19 +6,22 @@
 
 
 
+
 using namespace std;
 
 struct nodo{
-            char nombre;//nombre del vertice o nodo
+            char* nombre = new char[10];//nombre del vertice o nodo
             struct nodo *sgte;
             struct arista *ady;//puntero hacia la primera arista del nodo
             };
 struct arista{
               struct nodo *destino;//puntero al nodo de llegada
               struct arista *sgte;
+              int *pso = new int[10];
               };
 typedef struct nodo *Tnodo;//  Tipo Nodo
 typedef struct arista *Tarista; //Tipo Arista
+
 
 Tnodo p;//puntero cabeza
 
@@ -61,8 +63,7 @@ void mostrar_aristas();
 
             }
 
-            cout<<endl<<endl;
-            system("pause");  system("cls");
+
 
         }while(op!=7);
    //     getch();
@@ -76,7 +77,7 @@ void menu()
     cout<<" 2. INSERTAR UNA ARISTA              "<<endl;
     cout<<" 3. MOSTRAR  GRAFO                   "<<endl;
     cout<<" 4. MOSTRAR ARISTAS DE UN NODO       "<<endl;
-
+    cout<<" 5. SALIR                            "<<endl;
 
     cout<<"\n INGRESE OPCION: ";
 }
@@ -86,15 +87,16 @@ void menu()
 void insertar_nodo()
 {
     Tnodo t,nuevo=new struct nodo;
-    cout<<"INGRESE VARIABLE:";
-    cin>>nuevo->nombre;
+    cout<<"INGRESE VARIABLE: \n";
+    cin>>*nuevo->nombre;
+    cout<<*nuevo->nombre<<"\n";
     nuevo->sgte = NULL;
     nuevo->ady=NULL;
 
     if(p==NULL)
      {
         p = nuevo;
-        cout<<"PRIMER NODO...!!!";
+
       }
     else
      {
@@ -112,12 +114,13 @@ void insertar_nodo()
 /*                      AGREGAR ARISTA
     funcion que utilizada para agregar la arista a dos nodos
 ---------------------------------------------------------------------*/
-void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo)
+void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
 {
     Tarista q;
     if(aux->ady==NULL)
     {   aux->ady=nuevo;
         nuevo->destino=aux2;
+        *nuevo->pso= *Peso;
         cout<<"PRIMERA ARISTA....!";
     }
     else
@@ -126,6 +129,8 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo)
             q=q->sgte;
         nuevo->destino=aux2;
         q->sgte=nuevo;
+        *nuevo->pso= *Peso;
+
         cout<<"ARISTA AGREGADA...!!!!";
     }
 
@@ -135,7 +140,8 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo)
     y hace llamado a agregar_arista para insertar la arista
 ---------------------------------------------------------------------*/
 void insertar_arista()
-{   char ini, fin;
+{   char* ini = new char[2], *fin = new char[2];
+    int *Peso = new int[2];
     Tarista nuevo=new struct arista;
     Tnodo aux, aux2;
 
@@ -146,15 +152,19 @@ void insertar_arista()
      }
     nuevo->sgte=NULL;
     cout<<"INGRESE NODO DE INICIO:";
-    cin>>ini;
+    cin>>*ini;
     cout<<"INGRESE NODO FINAL:";
-    cin>>fin;
+    cin>>*fin;
+    cout<<"Ingrese pero arista";
+    cin>>*Peso;
     aux=p;
     aux2=p;
     while(aux2!=NULL)
     {
-        if(aux2->nombre==fin)
+        if(*aux2->nombre==*fin)
         {
+
+            delete [] fin;
             break;
         }
 
@@ -162,9 +172,11 @@ void insertar_arista()
     }
     while(aux!=NULL)
     {
-        if(aux->nombre==ini)
+        if(*aux->nombre==*ini)
         {
-            agrega_arista(aux,aux2, nuevo);
+            agrega_arista(aux, aux2, nuevo, Peso);
+            delete[] ini;
+            delete [] Peso;
             return;
         }
 
@@ -190,7 +202,8 @@ void mostrar_grafo()
         {
             ar=ptr->ady;
             while(ar!=NULL)
-            {   cout<<" "<<ar->destino->nombre;
+            {   cout<<" "<<ar->destino->nombre<<" Peso";
+                cout << " "<<*ar->pso;
                 ar=ar->sgte;
              }
 
@@ -207,14 +220,15 @@ void mostrar_aristas()
 {
     Tnodo aux;
     Tarista ar;
-    char var;
+
+    char *var = new char[2];
     cout<<"MOSTRAR ARISTAS DE NODO\n";
     cout<<"INGRESE NODO:";
-    cin>>var;
+    cin>>*var;
     aux=p;
     while(aux!=NULL)
     {
-        if(aux->nombre==var)
+        if(*aux->nombre==*var)
         {
             if(aux->ady==NULL)
             {   cout<<"EL NODO NO TIENE ARISTAS...!!!!";
@@ -223,23 +237,26 @@ void mostrar_aristas()
             else
             {
                 cout<<"NODO|LISTA DE ADYACENCIA\n";
-                cout<<"   "<<aux->nombre<<"|";
+
+
                 ar=aux->ady;
 
                 while(ar!=NULL)
                 {
-                    cout<<ar->destino->nombre<<" ";
+                    cout<<*ar->destino->nombre<<" peso: ";
+                    cout<<"   "<<*ar->pso<<"|";
                     ar=ar->sgte;
                 }
                 cout<<endl;
+                delete [] var;
                 return;
             }
         }
         else
         aux=aux->sgte;
+        delete [] var;
     }
 }
-
 
 
 

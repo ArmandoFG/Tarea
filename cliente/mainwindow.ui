@@ -57,7 +57,7 @@ p, li { white-space: pre-wrap; }
      <string>Aceptar</string>
     </property>
    </widget>
-   <widget class="QTextEdit" name="opcion">
+   <widget class="QLineEdit" name="lineoption">
     <property name="geometry">
      <rect>
       <x>120</x>

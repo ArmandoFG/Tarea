@@ -12,12 +12,12 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
-#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -29,7 +29,7 @@ public:
     QTextBrowser *texto;
     QLabel *Opcion;
     QPushButton *Aceptar;
-    QTextEdit *opcion;
+    QLineEdit *lineoption;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -49,9 +49,9 @@ public:
         Aceptar = new QPushButton(centralwidget);
         Aceptar->setObjectName(QString::fromUtf8("Aceptar"));
         Aceptar->setGeometry(QRect(120, 320, 89, 25));
-        opcion = new QTextEdit(centralwidget);
-        opcion->setObjectName(QString::fromUtf8("opcion"));
-        opcion->setGeometry(QRect(120, 270, 121, 31));
+        lineoption = new QLineEdit(centralwidget);
+        lineoption->setObjectName(QString::fromUtf8("lineoption"));
+        lineoption->setGeometry(QRect(120, 270, 121, 31));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));

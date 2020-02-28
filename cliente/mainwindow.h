@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <string>
+using namespace std;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -12,14 +14,20 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    Ui::MainWindow *ui;
+    int enviar(string dato);
+
+    string respuesta;
 
 private:
-    Ui::MainWindow *ui;
 
 public slots:
+
+
     void Opciones();
 
  };
