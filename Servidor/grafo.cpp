@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <curses.h>
-
 #include <QCoreApplication>
 #include <unistd.h>
 #include <stdio.h>
@@ -15,20 +14,35 @@
 #include "grafo.h"
 #define PORT 8080
 
-string llamada;
-string respuesta;
+/**
+ *
+ * @author Armando Fallas
+ * @version 1.0
+ */
+
+
+
+string respuesta;   //Mensaje del cliente
 
 using namespace std;
 
+/**
+ * @brief The nodo struct Estructura del nodo
+ */
+
 struct nodo{
-            char* nombre = new char[10];//nombre del vertice o nodo
-            struct nodo *sgte;
+
+            char* nombre = new char[10];//Puntero nombre del nodo
+            struct nodo *sgte;  //Puntero hacia Nodo siguiente
             struct arista *ady;//puntero hacia la primera arista del nodo
             };
+/**
+ * @brief The arista struct Estructura de la arista
+ */
 struct arista{
               struct nodo *destino;//puntero al nodo de llegada
-              struct arista *sgte;
-              int *pso = new int[10];
+              struct arista *sgte;  //Puntero a la arista siguiente
+              int *pso = new int[10];   //Puntero hacia el peso de la arista
               };
 typedef struct nodo *Tnodo;//  Tipo Nodo
 typedef struct arista *Tarista; //Tipo Arista
@@ -48,10 +62,10 @@ void servidor();
  Grafo::Grafo(void)
 {
         p=NULL;
-        servidor();
+        servidor(); //Metodo del servidor
         if (respuesta == "Generar"){
-            crear_grafo();
-            mostrar_grafo();
+            crear_grafo();  //se crea el grafo
+            mostrar_grafo();    //Se muestra el grafo
         }
 
 
@@ -66,29 +80,36 @@ void servidor();
 
 /*                      INSERTAR NODO AL GRAFO
 ---------------------------------------------------------------------*/
+
+ /**
+ * @brief insertar_nodo Metodo para ingresar un nodo
+ * @param nombre    Nombre del nodo
+ */
 void insertar_nodo(char nombre)
 {
     Tnodo t,nuevo=new struct nodo;
 
-    *nuevo->nombre = nombre;
+    *nuevo->nombre = nombre;    //Se le asigna el nombre del nodo al puntero
 
     nuevo->sgte = NULL;
     nuevo->ady=NULL;
 
-    if(p==NULL)
+    if(p==NULL) //Si p es igual a nulo, no hay ningun nodo almacenado
      {
-        p = nuevo;
+        p = nuevo;  // Se ingresa el nodo
 
       }
     else
      {
-        t = p;
+        t = p;  //Se le asigna el puntero a cabecera a t
+        //Mientras el siguiente nodo de t sea diferente a null recorrera todos los nodos ecistentes
         while(t->sgte!=NULL)
          {
             t = t->sgte;
           }
+        //Se ingresa el nodo
         t->sgte = nuevo;
-        cout<<"NODO INGRESADO...!!!";
+
       }
 
  }
@@ -96,15 +117,23 @@ void insertar_nodo(char nombre)
 /*                      AGREGAR ARISTA
     funcion que utilizada para agregar la arista a dos nodos
 ---------------------------------------------------------------------*/
+/**
+ * @brief agrega_arista Metodo para la insercion de aristas
+ * @param aux   Nodo auxiliar para ingresar arista
+ * @param aux2  Nodo auxiliar para ingresar arist
+ * @param nuevo Arista ingresada
+ * @param Peso  Peso de la arista
+ */
 void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
 {
-    Tarista q;
+    Tarista q;  //Arista auxiliar
+    //Si el nodo no tiene arista la ingresa
     if(aux->ady==NULL)
     {   aux->ady=nuevo;
         nuevo->destino=aux2;
         *nuevo->pso= *Peso;
-        cout<<"PRIMERA ARISTA....!";
-    }
+
+    } // si no esta vacía recorre todas las aristas hasta llegar a null
     else
     {   q=aux->ady;
         while(q->sgte!=NULL)
@@ -113,23 +142,28 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
         q->sgte=nuevo;
         *nuevo->pso= *Peso;
 
-        cout<<"ARISTA AGREGADA...!!!!";
+
     }
 
 }
-/*                      INSERTAR ARISTA
-    funcion que busca las posiciones de memoria de los nodos
-    y hace llamado a agregar_arista para insertar la arista
+/*
 ---------------------------------------------------------------------*/
+/**
+ * @brief insertar_arista   Metodo para insertar arista
+ * @param inicio    Nombre del nodo inicio
+ * @param final     Nombre del nodo final
+ * @param peso      Peso de la arista
+ */
 void insertar_arista(char inicio, char final, int peso)
-{   char* ini = new char[2], *fin = new char[2];
-    int *Peso = new int[2];
-    Tarista nuevo=new struct arista;
+{   char* ini = new char[2], *fin = new char[2];    //Punteros de nombre de inicio y final de los nodos de la arista
+    int *Peso = new int[2]; //Puntero del peso de la arista
+    Tarista nuevo=new struct arista;    //Se crea la variable de la nueva arista
     Tnodo aux, aux2;
 
+    //Si no hay nodos no puede ingresar la arista
     if(p==NULL)
      {
-         cout<<"GRAFO VACIO...!!!!";
+
          return;
      }
     nuevo->sgte=NULL;
@@ -138,6 +172,7 @@ void insertar_arista(char inicio, char final, int peso)
     *Peso = peso;
     aux=p;
     aux2=p;
+    //Se recorre los nodos para verificar que existan y para agregarle la arista
     while(aux2!=NULL)
     {
         if(*aux2->nombre==*fin)
@@ -166,9 +201,11 @@ void insertar_arista(char inicio, char final, int peso)
 
 
 
-/*                      MOSTRAR GRAFO
-    funcion que imprime un grafo en su forma enlazada
+/*
 ---------------------------------------------------------------------*/
+/**
+ * @brief mostrar_grafo Metodo para mostrar grafo de la lista enlazada
+ */
 void mostrar_grafo()
 {   Tnodo ptr;
     Tarista ar;
@@ -237,7 +274,9 @@ void mostrar_aristas()
     }
 }
 
-
+/**
+ * @brief crear_grafo   Metodo para crear un grafo predeterminado
+ */
 
 void crear_grafo(){
     string nombre1 = "A";
@@ -257,6 +296,10 @@ void crear_grafo(){
     insertar_arista(*nombre4.c_str(), *nombre1.c_str(), 23);
     insertar_arista(*nombre3.c_str(), *nombre4.c_str(), 10);
 }
+
+/**
+ * @brief servidor  Metodo para crear conexion con los sockets
+ */
 void servidor(){
     int server_fd, new_socket, valread, n;
         struct sockaddr_in address;
@@ -312,7 +355,6 @@ void servidor(){
 
         while(valread>0){
             respuesta = cadena;
-            llamada= printf("%s", cadena);
             valread = 0;
             close(new_socket);
             close(server_fd);
