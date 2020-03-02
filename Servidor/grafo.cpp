@@ -4,8 +4,19 @@
 #include <iostream>
 #include <curses.h>
 
+#include <QCoreApplication>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <grafo.h>
+#include "grafo.h"
+#define PORT 8080
 
-
+string llamada;
+string respuesta;
 
 using namespace std;
 
@@ -26,70 +37,41 @@ typedef struct arista *Tarista; //Tipo Arista
 Tnodo p;//puntero cabeza
 
 void menu();
-void insertar_nodo();
+void insertar_nodo(char nombre);
 void agrega_arista(Tnodo &, Tnodo &, Tarista &);
 void insertar_arista();
 void mostrar_grafo();
 void mostrar_aristas();
+void crear_grafo();
+void servidor();
 
  Grafo::Grafo(void)
 {
         p=NULL;
-        int op;     // opcion del menu
+        servidor();
+        if (respuesta == "Generar"){
+            crear_grafo();
+            mostrar_grafo();
+        }
 
 
 
 
-        do
-        {
-            menu();
-            cin>>op;
-
-            switch(op)
-            {
-                case 1:
-                        insertar_nodo();
-                        break;
-                case 2: insertar_arista();
-                        break;
-                case 3: mostrar_grafo();
-                        break;
-                case 4: mostrar_aristas();
-                        break;
-
-                default: cout<<"OPCION NO VALIDA...!!!";
-                         break;
-
-
-            }
 
 
 
-        }while(op!=7);
-   //     getch();
 
     }
 
-void menu()
-{
-
-    cout<<" 1. INSERTAR UN NODO                 "<<endl;
-    cout<<" 2. INSERTAR UNA ARISTA              "<<endl;
-    cout<<" 3. MOSTRAR  GRAFO                   "<<endl;
-    cout<<" 4. MOSTRAR ARISTAS DE UN NODO       "<<endl;
-    cout<<" 5. SALIR                            "<<endl;
-
-    cout<<"\n INGRESE OPCION: ";
-}
 
 /*                      INSERTAR NODO AL GRAFO
 ---------------------------------------------------------------------*/
-void insertar_nodo()
+void insertar_nodo(char nombre)
 {
     Tnodo t,nuevo=new struct nodo;
-    cout<<"INGRESE VARIABLE: \n";
-    cin>>*nuevo->nombre;
-    cout<<*nuevo->nombre<<"\n";
+
+    *nuevo->nombre = nombre;
+
     nuevo->sgte = NULL;
     nuevo->ady=NULL;
 
@@ -139,7 +121,7 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
     funcion que busca las posiciones de memoria de los nodos
     y hace llamado a agregar_arista para insertar la arista
 ---------------------------------------------------------------------*/
-void insertar_arista()
+void insertar_arista(char inicio, char final, int peso)
 {   char* ini = new char[2], *fin = new char[2];
     int *Peso = new int[2];
     Tarista nuevo=new struct arista;
@@ -151,12 +133,9 @@ void insertar_arista()
          return;
      }
     nuevo->sgte=NULL;
-    cout<<"INGRESE NODO DE INICIO:";
-    cin>>*ini;
-    cout<<"INGRESE NODO FINAL:";
-    cin>>*fin;
-    cout<<"Ingrese pero arista";
-    cin>>*Peso;
+    *ini = inicio;
+    *fin = final;
+    *Peso = peso;
     aux=p;
     aux2=p;
     while(aux2!=NULL)
@@ -256,6 +235,89 @@ void mostrar_aristas()
         aux=aux->sgte;
         delete [] var;
     }
+}
+
+
+
+void crear_grafo(){
+    string nombre1 = "A";
+    string nombre2 = "B";
+    string nombre3 = "C";
+    string nombre4 = "D";
+    string nombre5 = "E";
+    insertar_nodo(*nombre1.c_str());
+    insertar_nodo(*nombre2.c_str());
+    insertar_nodo(*nombre3.c_str());
+    insertar_nodo(*nombre4.c_str());
+    insertar_nodo(*nombre5.c_str());
+    insertar_arista(*nombre1.c_str(), *nombre3.c_str(), 49);
+    insertar_arista(*nombre1.c_str(), *nombre2.c_str(), 12);
+    insertar_arista(*nombre5.c_str(), *nombre4.c_str(), 1);
+    insertar_arista(*nombre2.c_str(), *nombre3.c_str(), 43);
+    insertar_arista(*nombre4.c_str(), *nombre1.c_str(), 23);
+    insertar_arista(*nombre3.c_str(), *nombre4.c_str(), 10);
+}
+void servidor(){
+    int server_fd, new_socket, valread, n;
+        struct sockaddr_in address;
+        int opt = 1;
+        int addrlen = sizeof(address);
+        char buffer[1024] = {0};
+        string respuesta2;
+        char* cadena;
+        cadena = (char *)respuesta2.c_str();
+
+        // Creating socket file descriptor
+        if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            perror("socket failed");
+            exit(EXIT_FAILURE);
+        }
+
+        // Forcefully attaching socket to the port 8080
+        if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                                                      &opt, sizeof(opt)))
+        {
+            perror("setsockopt");
+            exit(EXIT_FAILURE);
+        }
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = INADDR_ANY;
+        address.sin_port = htons( PORT );
+
+        // Forcefully attaching socket to the port 8080
+        if (bind(server_fd, (struct sockaddr *)&address,
+                                     sizeof(address))<0)
+        {
+            perror("bind failed");
+            exit(EXIT_FAILURE);
+        }
+        if (listen(server_fd, 3) < 0)
+        {
+            perror("listen");
+            exit(EXIT_FAILURE);
+        }
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+                           (socklen_t*)&addrlen))<0)
+        {
+
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
+        listen(server_fd, 5);
+        //n = strlen(cadena);
+
+
+        valread = read( new_socket , cadena, 1024);
+
+        while(valread>0){
+            respuesta = cadena;
+            llamada= printf("%s", cadena);
+            valread = 0;
+            close(new_socket);
+            close(server_fd);
+        }
+
 }
 
 

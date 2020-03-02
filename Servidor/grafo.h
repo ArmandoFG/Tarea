@@ -11,7 +11,7 @@ class Grafo
 public:
     Grafo();
     string mensajeServer;
-    string respuesta;
+
 
 };
 
