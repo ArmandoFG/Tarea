@@ -212,6 +212,7 @@ DIST          = ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/spec_post.prf \
+		../Servidor/.qmake.stash \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -399,6 +400,7 @@ Makefile: ../Servidor/Servidor.pro ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/linux
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/qt_config.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/toolchain.prf \
 		../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/default_pre.prf \
@@ -575,6 +577,7 @@ Makefile: ../Servidor/Servidor.pro ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/linux
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/qt_config.prf:
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/linux-g++/qmake.conf:
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/exclusive_builds.prf:
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/toolchain.prf:
 ../../../Qt5.14.1/5.14.1/gcc_64/mkspecs/features/default_pre.prf:

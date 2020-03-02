@@ -12,7 +12,13 @@
 #include <string.h>
 #include <grafo.h>
 #include "grafo.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sstream>
 #define PORT 8080
+
+
+
 
 /**
  *
@@ -22,7 +28,9 @@
 
 
 
+
 string respuesta;   //Mensaje del cliente
+string enviar;      //mensaje a enviar al cliente
 
 using namespace std;
 
@@ -35,17 +43,26 @@ struct nodo{
             char* nombre = new char[10];//Puntero nombre del nodo
             struct nodo *sgte;  //Puntero hacia Nodo siguiente
             struct arista *ady;//puntero hacia la primera arista del nodo
+            int marca;
             };
 /**
  * @brief The arista struct Estructura de la arista
  */
 struct arista{
+
               struct nodo *destino;//puntero al nodo de llegada
               struct arista *sgte;  //Puntero a la arista siguiente
               int *pso = new int[10];   //Puntero hacia el peso de la arista
+              int marca;
+              int suma;
               };
 typedef struct nodo *Tnodo;//  Tipo Nodo
 typedef struct arista *Tarista; //Tipo Arista
+
+struct nodo  *aux, *aux2;
+struct arista  *auxArc, *arcMen, *auxArc2, *antArc;
+char auxNod, ban2;
+int ban;
 
 
 Tnodo p;//puntero cabeza
@@ -58,6 +75,7 @@ void mostrar_grafo();
 void mostrar_aristas();
 void crear_grafo();
 void servidor();
+void algoritmoDijkstra ();
 
  Grafo::Grafo(void)
 {
@@ -66,7 +84,9 @@ void servidor();
         if (respuesta == "Generar"){
             crear_grafo();  //se crea el grafo
             mostrar_grafo();    //Se muestra el grafo
+            algoritmoDijkstra ();
         }
+
 
 
 
@@ -78,7 +98,7 @@ void servidor();
     }
 
 
-/*                      INSERTAR NODO AL GRAFO
+/*
 ---------------------------------------------------------------------*/
 
  /**
@@ -114,8 +134,7 @@ void insertar_nodo(char nombre)
 
  }
 
-/*                      AGREGAR ARISTA
-    funcion que utilizada para agregar la arista a dos nodos
+/*
 ---------------------------------------------------------------------*/
 /**
  * @brief agrega_arista Metodo para la insercion de aristas
@@ -229,50 +248,9 @@ void mostrar_grafo()
     }
 }
 
-/*                      MOSTRAR ARISTAS
-    funcion que muestra todas las aristas de un nodo seleccionado
+/*
 ---------------------------------------------------------------------*/
-void mostrar_aristas()
-{
-    Tnodo aux;
-    Tarista ar;
 
-    char *var = new char[2];
-    cout<<"MOSTRAR ARISTAS DE NODO\n";
-    cout<<"INGRESE NODO:";
-    cin>>*var;
-    aux=p;
-    while(aux!=NULL)
-    {
-        if(*aux->nombre==*var)
-        {
-            if(aux->ady==NULL)
-            {   cout<<"EL NODO NO TIENE ARISTAS...!!!!";
-                return;
-             }
-            else
-            {
-                cout<<"NODO|LISTA DE ADYACENCIA\n";
-
-
-                ar=aux->ady;
-
-                while(ar!=NULL)
-                {
-                    cout<<*ar->destino->nombre<<" peso: ";
-                    cout<<"   "<<*ar->pso<<"|";
-                    ar=ar->sgte;
-                }
-                cout<<endl;
-                delete [] var;
-                return;
-            }
-        }
-        else
-        aux=aux->sgte;
-        delete [] var;
-    }
-}
 
 /**
  * @brief crear_grafo   Metodo para crear un grafo predeterminado
@@ -301,7 +279,7 @@ void crear_grafo(){
  * @brief servidor  Metodo para crear conexion con los sockets
  */
 void servidor(){
-    int server_fd, new_socket, valread, n;
+        int server_fd, new_socket, valread, n;
         struct sockaddr_in address;
         int opt = 1;
         int addrlen = sizeof(address);
@@ -361,6 +339,164 @@ void servidor(){
         }
 
 }
+
+
+/*-------------------------------------------------------------------------------------------------------------*/
+
+void actualizarCampos () {
+     aux = p;
+     while (aux != NULL){
+           auxArc = aux->ady;
+           while (auxArc != NULL){
+                 auxArc->marca = 0;
+                 auxArc->suma = 0;
+                 auxArc = auxArc->sgte;
+           }
+           aux->marca = 0;
+           aux = aux->sgte;
+     }
+}
+
+void obtenerSumaMenor () {
+     aux2 = p;
+     arcMen = NULL;
+     while (aux2 != NULL){
+           if (aux2->marca == 1){
+                      auxArc = aux2->ady;
+                      while (auxArc != NULL){
+                            if (auxArc->marca == 1){
+                                  if (arcMen == NULL){
+                                         arcMen = auxArc;
+                                  }
+                                  else{
+                                       if (auxArc->suma < arcMen->suma){
+                                              arcMen = auxArc;
+                                       }
+                                  }
+                            }
+                            auxArc = auxArc->sgte;
+                      }
+           }
+           aux2 = aux2->sgte;
+     }
+     arcMen->marca = 3;
+     arcMen->destino->marca = 1;
+     auxArc = arcMen->destino->ady;
+     while (auxArc != NULL){
+           auxArc->suma = *(arcMen->suma + auxArc->pso);
+           auxArc = auxArc->sgte;
+     }
+}
+
+
+
+
+void paso2Dijkstra () {
+    obtenerSumaMenor();
+
+   // cout << "\nLa sumatoria hasta el arco " << arcMen->destino->nombre << " es: "<< arcMen->suma;
+    char *nombre_n = arcMen->destino->nombre;
+    int suma_ruta = arcMen->suma;
+    stringstream ss;
+    ss << suma_ruta;
+    enviar =  "\nLa sumatoria hasta el arco " + string(nombre_n) + " es: " + ss.str();
+    cout<<enviar;
+    aux = arcMen->destino;
+            auxArc = aux->ady;
+            while (auxArc != NULL){
+                  if (auxArc->destino->marca == 0){
+                         aux2 = p;
+                         while (aux2 != NULL){
+                               if (aux2 != aux && aux2->marca == 1){
+                                     auxArc2 = aux2->ady;
+                                     while (auxArc2 != NULL){
+                                           if (auxArc->destino->nombre == auxArc2->destino->nombre){
+                                                  if (auxArc->suma  < auxArc2->suma){
+                                                         auxArc2->marca = 2;
+                                                         auxArc->marca = 1;
+                                                  }
+                                                  else {
+                                                       auxArc->marca = 2;
+                                                       auxArc2->marca = 1;
+                                                  }
+                                           }
+                                           auxArc2 = auxArc2->sgte;
+                                     }
+                               }
+                               aux2 = aux2->sgte;
+                         }
+                         if (auxArc->marca == 0){
+                                auxArc->marca = 1;
+                                auxArc->suma = *(arcMen->suma + auxArc->pso);
+                         }
+                  }
+                  else {
+                       auxArc->marca = 2;
+                  }
+                  auxArc = auxArc->sgte;
+            }
+}
+
+
+
+
+
+void algoritmoDijkstra () {
+     system("cls");
+     if (p != NULL){
+            actualizarCampos ();
+            cout << "Digite el vertice inicial: ";
+            cin >> auxNod;
+            ban = 0;
+            while (ban == 0){
+                  aux = p;
+                  while (aux != NULL){
+                        if (*aux->nombre == auxNod){
+                               ban = 1;
+                        }
+                        aux = aux->sgte;
+                  }
+                  if (ban == 0){
+                         cout << "\nNo existe un nodo con esa letra.";
+                         aux = p;
+                         cout << "\n---Lista de Nodos---\n";
+                         while (aux != NULL){
+                               cout << aux->nombre << " ";
+                               aux = aux->sgte;
+                         }
+                         cout << "\nDigite uno de los anteriores nodos: ";
+                         cin >> auxNod;
+                  }
+            }
+            aux = p;
+            while (*aux->nombre != auxNod){
+                  aux = aux->sgte;
+            }
+            aux->marca = 1;
+            auxArc = aux->ady;
+            while (auxArc != NULL){
+                  auxArc->marca = 1;
+                  auxArc->suma = *auxArc->pso;
+                  auxArc = auxArc->sgte;
+            }
+            cout << "\nSe han trazado todos los arcos para el vertice elegido.";
+            ban2 = 1;
+            while (ban2 == 1){
+                  paso2Dijkstra();
+                  ban2 = 0;
+                  aux = p;
+                  while (aux != NULL){
+                        if (aux->marca == 0){
+                               ban2 = 1;
+                        }
+                        aux = aux->sgte;
+                  }
+            }
+
+     }
+
+}
+
 
 
 
