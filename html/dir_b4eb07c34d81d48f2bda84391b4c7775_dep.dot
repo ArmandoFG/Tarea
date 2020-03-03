@@ -1,0 +1,8 @@
+digraph "CLIENTE" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  dir_b4eb07c34d81d48f2bda84391b4c7775 [shape=box, label="CLIENTE", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_b4eb07c34d81d48f2bda84391b4c7775.html"];
+  dir_1b023854608372c75a5f1a64058139d6 [shape=box label="build-cliente-Desktop_1bcd99-Debug" URL="dir_1b023854608372c75a5f1a64058139d6.html"];
+  dir_b4eb07c34d81d48f2bda84391b4c7775->dir_1b023854608372c75a5f1a64058139d6 [headlabel="1", labeldistance=1.5 headhref="dir_000001_000000.html"];
+}

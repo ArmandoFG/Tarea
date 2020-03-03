@@ -52,16 +52,16 @@ struct arista{
 
               struct nodo *destino;//puntero al nodo de llegada
               struct arista *sgte;  //Puntero a la arista siguiente
-              int *pso = new int[10];   //Puntero hacia el peso de la arista
+              int pso;   //Puntero hacia el peso de la arista
               int marca;
-              int suma;
+              int suma;;
               };
 typedef struct nodo *Tnodo;//  Tipo Nodo
 typedef struct arista *Tarista; //Tipo Arista
 
 struct nodo  *aux, *aux2;
 struct arista  *auxArc, *arcMen, *auxArc2, *antArc;
-char auxNod, ban2;
+char auxNod, ban2, auxfinal;
 int ban;
 
 
@@ -150,7 +150,7 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
     if(aux->ady==NULL)
     {   aux->ady=nuevo;
         nuevo->destino=aux2;
-        *nuevo->pso= *Peso;
+        nuevo->pso= *Peso;
 
     } // si no esta vacía recorre todas las aristas hasta llegar a null
     else
@@ -159,7 +159,7 @@ void agrega_arista(Tnodo &aux, Tnodo &aux2, Tarista &nuevo, int *Peso)
             q=q->sgte;
         nuevo->destino=aux2;
         q->sgte=nuevo;
-        *nuevo->pso= *Peso;
+        nuevo->pso= *Peso;
 
 
     }
@@ -238,7 +238,7 @@ void mostrar_grafo()
             ar=ptr->ady;
             while(ar!=NULL)
             {   cout<<" "<<ar->destino->nombre<<" Peso";
-                cout << " "<<*ar->pso;
+                cout << " "<<ar->pso;
                 ar=ar->sgte;
              }
 
@@ -267,35 +267,35 @@ void crear_grafo(){
     insertar_nodo(*nombre3.c_str());
     insertar_nodo(*nombre4.c_str());
     insertar_nodo(*nombre5.c_str());
-    insertar_arista(*nombre1.c_str(), *nombre3.c_str(), 49);
-    insertar_arista(*nombre1.c_str(), *nombre2.c_str(), 12);
-    insertar_arista(*nombre5.c_str(), *nombre4.c_str(), 1);
-    insertar_arista(*nombre2.c_str(), *nombre3.c_str(), 43);
-    insertar_arista(*nombre4.c_str(), *nombre1.c_str(), 23);
-    insertar_arista(*nombre3.c_str(), *nombre4.c_str(), 10);
+    insertar_arista(*nombre1.c_str(), *nombre2.c_str(), 10);
+    insertar_arista(*nombre2.c_str(), *nombre3.c_str(), 12);
+    insertar_arista(*nombre5.c_str(), *nombre4.c_str(), 15);
+    insertar_arista(*nombre4.c_str(), *nombre3.c_str(), 15);
+    insertar_arista(*nombre3.c_str(), *nombre4.c_str(), 23);
+    insertar_arista(*nombre4.c_str(), *nombre5.c_str(), 10);
+    insertar_arista(*nombre2.c_str(), *nombre4.c_str(), 100);
 }
 
 /**
  * @brief servidor  Metodo para crear conexion con los sockets
  */
 void servidor(){
-        int server_fd, new_socket, valread, n;
+        int server_fd, new_socket, valread;
         struct sockaddr_in address;
         int opt = 1;
         int addrlen = sizeof(address);
-        char buffer[1024] = {0};
         string respuesta2;
         char* cadena;
         cadena = (char *)respuesta2.c_str();
 
-        // Creating socket file descriptor
+        // Crear descriptor de archivo de socket
         if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
         {
             perror("socket failed");
             exit(EXIT_FAILURE);
         }
 
-        // Forcefully attaching socket to the port 8080
+        // Conexión forzada del zócalo al puerto 8080
         if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
                                                       &opt, sizeof(opt)))
         {
@@ -306,7 +306,7 @@ void servidor(){
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons( PORT );
 
-        // Forcefully attaching socket to the port 8080
+
         if (bind(server_fd, (struct sockaddr *)&address,
                                      sizeof(address))<0)
         {
@@ -325,11 +325,11 @@ void servidor(){
             perror("accept");
             exit(EXIT_FAILURE);
         }
-        listen(server_fd, 5);
-        //n = strlen(cadena);
+        listen(server_fd, 5);   //A la escucha para conexiones
 
 
-        valread = read( new_socket , cadena, 1024);
+
+        valread = read( new_socket , cadena, 1024); //Leyendo tamaño del mensaje
 
         while(valread>0){
             respuesta = cadena;
@@ -343,10 +343,15 @@ void servidor(){
 
 /*-------------------------------------------------------------------------------------------------------------*/
 
+/**
+ * @brief actualizarCampos Este metodo incializa de nuevo las marcas y las sumas para buscar nuevas rutas
+ */
+
 void actualizarCampos () {
      aux = p;
      while (aux != NULL){
            auxArc = aux->ady;
+
            while (auxArc != NULL){
                  auxArc->marca = 0;
                  auxArc->suma = 0;
@@ -356,6 +361,10 @@ void actualizarCampos () {
            aux = aux->sgte;
      }
 }
+
+/**
+ * @brief obtenerSumaMenor  Se compara la ruta menor hacia el destino
+ */
 
 void obtenerSumaMenor () {
      aux2 = p;
@@ -367,6 +376,7 @@ void obtenerSumaMenor () {
                             if (auxArc->marca == 1){
                                   if (arcMen == NULL){
                                          arcMen = auxArc;
+
                                   }
                                   else{
                                        if (auxArc->suma < arcMen->suma){
@@ -381,26 +391,37 @@ void obtenerSumaMenor () {
      }
      arcMen->marca = 3;
      arcMen->destino->marca = 1;
+
      auxArc = arcMen->destino->ady;
+
      while (auxArc != NULL){
-           auxArc->suma = *(arcMen->suma + auxArc->pso);
+           auxArc->suma = (arcMen->suma + auxArc->pso);
+
            auxArc = auxArc->sgte;
      }
+
 }
 
 
-
+/**
+ * @brief paso2Dijkstra Metodo de comparaciones de rutas
+ */
 
 void paso2Dijkstra () {
     obtenerSumaMenor();
 
-   // cout << "\nLa sumatoria hasta el arco " << arcMen->destino->nombre << " es: "<< arcMen->suma;
     char *nombre_n = arcMen->destino->nombre;
+
     int suma_ruta = arcMen->suma;
+
     stringstream ss;
     ss << suma_ruta;
-    enviar =  "\nLa sumatoria hasta el arco " + string(nombre_n) + " es: " + ss.str();
+    if (auxfinal == *nombre_n){
+    cout<< nombre_n;
+    enviar =  "\nLa sumatoria hasta el arco " + string(nombre_n) + " es: " + ss.str() +"\n";
     cout<<enviar;
+
+    }
     aux = arcMen->destino;
             auxArc = aux->ady;
             while (auxArc != NULL){
@@ -410,7 +431,7 @@ void paso2Dijkstra () {
                                if (aux2 != aux && aux2->marca == 1){
                                      auxArc2 = aux2->ady;
                                      while (auxArc2 != NULL){
-                                           if (auxArc->destino->nombre == auxArc2->destino->nombre){
+                                           if (*auxArc->destino->nombre == *auxArc2->destino->nombre){
                                                   if (auxArc->suma  < auxArc2->suma){
                                                          auxArc2->marca = 2;
                                                          auxArc->marca = 1;
@@ -427,7 +448,7 @@ void paso2Dijkstra () {
                          }
                          if (auxArc->marca == 0){
                                 auxArc->marca = 1;
-                                auxArc->suma = *(arcMen->suma + auxArc->pso);
+                                auxArc->suma = (arcMen->suma + auxArc->pso);
                          }
                   }
                   else {
@@ -439,7 +460,9 @@ void paso2Dijkstra () {
 
 
 
-
+/**
+ * @brief algoritmoDijkstra Metodo para inicializar el nodo de partida y el final
+ */
 
 void algoritmoDijkstra () {
      system("cls");
@@ -447,6 +470,8 @@ void algoritmoDijkstra () {
             actualizarCampos ();
             cout << "Digite el vertice inicial: ";
             cin >> auxNod;
+            cout << "Digite el vertice final: ";
+            cin >> auxfinal;
             ban = 0;
             while (ban == 0){
                   aux = p;
@@ -471,12 +496,13 @@ void algoritmoDijkstra () {
             aux = p;
             while (*aux->nombre != auxNod){
                   aux = aux->sgte;
+
             }
             aux->marca = 1;
             auxArc = aux->ady;
             while (auxArc != NULL){
                   auxArc->marca = 1;
-                  auxArc->suma = *auxArc->pso;
+                  auxArc->suma = auxArc->pso;
                   auxArc = auxArc->sgte;
             }
             cout << "\nSe han trazado todos los arcos para el vertice elegido.";
